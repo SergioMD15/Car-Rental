@@ -1,5 +1,6 @@
 from exceptions.ValueTooLowException import ValueTooLowException
 from exceptions.InvalidDateException import InvalidDateException
+from model.Extra import Extra
 import datetime as dt
 
 
@@ -10,6 +11,11 @@ class Rental:
         self.set_start_date(start_date)
         self.set_end_date(end_date)
         self.set_distance(distance)
+        self.extras = {}
+
+    def add_extra(self, extra):
+        if extra.id not in self.extras:
+            self.extras[extra.id] = extra
 
     def set_id(self, i):
         if i > 0:

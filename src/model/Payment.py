@@ -17,6 +17,6 @@ class Payment:
 
     def set_amount(self, amount):
         if amount < 0:
-            raise ValueTooLowException('Amount', 'Payment', '0')
+            raise ValueTooLowException('Payment', 'amount', '0')
         else:
             self.amount = int(amount)

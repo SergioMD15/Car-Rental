@@ -70,14 +70,19 @@ class RentalController:
         
         After computing all the prices for the different rentals, we generate
         a receipt with a breakdown of the actions for each rental.
-        Each rental is identified with its id and a detailed breakdown of the
-        amount credited or debited to each actor.
+        Each rental is identified with its id, the extras that it has included,
+        and a detailed breakdown of the amount credited or debited to each
+        actor.
         """
         self.io.output_rental_recipe(
             {'rentals':
                 [
                     {
                         'id': rental.id,
+                        'options': [
+                            extra.name
+                            for extra in rental.extras.values()
+                        ],
                         'actions': self.get_actions(rental)
                     }
                     for rental in self.rentals
