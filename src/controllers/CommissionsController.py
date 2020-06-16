@@ -1,4 +1,5 @@
 from model.Rental import Rental
+from model.Payment import Payment
 
 
 class CommissionsController:
@@ -8,12 +9,23 @@ class CommissionsController:
         self.rental_prices = rentals_prices
 
     def compute_payments(self, rental):
-        """Each actor along with the corresponding commission amount."""
+        """Each actor has an amount of debited or credited money (in € cents)."""
         return {
-            'insurance_fee': int(self.compute_insurance(rental)),
-            'assistance_fee': int(self.compute_assistance(rental)),
-            'drivy_fee': int(self.compute_drivy(rental))
+            'driver': Payment(int(self.compute_driver(rental)), 'debit'),
+            'owner': Payment(int(self.compute_owner(rental)),
+                             'credit'),
+            'insurance': Payment(int(self.compute_insurance(rental)), 'credit'),
+            'assistance': Payment(int(self.compute_assistance(rental)), 'credit'),
+            'drivy': Payment(int(self.compute_drivy(rental)), 'credit')
         }
+
+    def compute_driver(self, rental):
+        """The driver debits the base price of the rental."""
+        return self.rental_prices[rental.id]
+
+    def compute_owner(self, rental):
+        """The owner credits a 70% of the rental base price."""
+        return self.rental_prices[rental.id] * 0.7
 
     def compute_insurance(self, rental):
         """The insurance credits half of the remaining 30%."""
@@ -24,7 +36,7 @@ class CommissionsController:
         return rental.get_days_rented() * 100
 
     def compute_drivy(self, rental):
-        """What remains from the original 30% (after the commissions of
-        insurance and assistance) belongs to drivy.
+        """What remains from the original 30% (after crediting insurance and
+        assitance) is credited to drivy.
         """
-        return max(self.compute_insurance(rental) - self.compute_assistance(rental), 0)
+        return self.compute_insurance(rental) - self.compute_assistance(rental)
